@@ -1,10 +1,11 @@
 #################################################################################
 # GLOBALS                                                                       #
 #################################################################################
+include .env
+export
 
 PROJECT_NAME = materials_property_prediction
-PYTHON_VERSION = 3.10
-PYTHON_INTERPRETER = python
+PYTHON_INTERPRETER = uv run python
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -12,13 +13,19 @@ PYTHON_INTERPRETER = python
 
 
 ## Install Python dependencies
-.PHONY: requirements
-requirements:
-	$(PYTHON_INTERPRETER) -m pip install -U pip
-	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
-	
 
+.PHONY: setup
+setup:
+	@command -v uv >/dev/null 2>&1 || curl -LsSf https://astral.sh/uv/install.sh | sh
+	@PATH="$$HOME/.local/bin:$$PATH" uv sync --group dev	
 
+.PHONY: init_db
+init_db:
+	psql -h $(DB_HOST) -U $(DB_USER) -d $(DB_NAME) -f property_prediction/db/schema.sql
+
+.PHONY: clear_db
+clear_db:
+	psql -h $(DB_HOST) -U $(DB_USER) -d $(DB_NAME) -f property_prediction/db/clear.sql
 
 ## Delete all compiled Python files
 .PHONY: clean
@@ -44,7 +51,7 @@ format:
 ## Download Data from storage system
 .PHONY: sync_data_down
 sync_data_down:
-	aws s3 sync s3://material_properties/data/ \
+	aws s3 sync s3://$(S3_BUCKET_NAME)/data/ \
 		data/ 
 	
 
@@ -52,20 +59,8 @@ sync_data_down:
 .PHONY: sync_data_up
 sync_data_up:
 	aws s3 sync data/ \
-		s3://material_properties/data 
+		s3://$(S3_BUCKET_NAME)/data 
 	
-
-
-
-## Set up Python interpreter environment
-.PHONY: create_environment
-create_environment:
-	
-	conda create --name $(PROJECT_NAME) python=$(PYTHON_VERSION) -y
-	
-	@echo ">>> conda env created. Activate with:\nconda activate $(PROJECT_NAME)"
-	
-
 
 
 #################################################################################
@@ -75,7 +70,7 @@ create_environment:
 
 ## Make dataset
 .PHONY: data
-data: requirements
+data: setup
 	$(PYTHON_INTERPRETER) property_prediction/dataset.py
 
 
