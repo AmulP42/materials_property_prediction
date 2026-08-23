@@ -27,12 +27,19 @@ dependencies = [
   "tqdm",
   "typer",
   "awscli",
+  "seaborn",
+  'matplotlib-inline',
+  'pymatviz',
+  'nbformat',
+  'umap-learn',
+  'matminer'
 ]
 
 [dependency-groups]
 dev = [
   "ruff",
   "mkdocs",
+  "ipython>=8.39.0",
 ]
 
 [tool.ruff]
