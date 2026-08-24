@@ -110,6 +110,7 @@ def fetch_all(batch_size, fields, config):
     )
     return docs
 
+
 def upload_to_s3(records, batch_num, config):
     """
     Takes a batch of materials and uploads it to the s3 bucket.
