@@ -33,6 +33,9 @@ clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 
+.PHONY: mlflow
+mlflow:
+	$(PYTHON_INTERPRETER) -m mlflow ui --port 5000
 
 ## Lint using ruff (use `make format` to do formatting)
 .PHONY: lint

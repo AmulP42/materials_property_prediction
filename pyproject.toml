@@ -32,7 +32,11 @@ dependencies = [
   'pymatviz',
   'nbformat',
   'umap-learn',
-  'matminer'
+  'matminer',
+  'mlflow',
+  'scikit-learn',
+  'xgboost',
+  'shap'
 ]
 
 [dependency-groups]
